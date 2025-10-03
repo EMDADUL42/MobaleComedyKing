@@ -30,8 +30,8 @@ public class ComedyKing {
 	private static final String KEY_LAST_FETCH = "last_fetch";
 	
 	// 24 hours in millis
-	//private static final long EXPIRY_DURATION = 24 * 60 * 60 * 1000;
-	private static final long EXPIRY_DURATION=30000;
+	private static final long EXPIRY_DURATION = 24 * 60 * 60 * 1000;
+	
 	
 	public ComedyKing(Context context) {
 		client = new OkHttpClient.Builder()
