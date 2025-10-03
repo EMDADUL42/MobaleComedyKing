@@ -1,0 +1,50 @@
+<resources>
+
+    <!-- Use This Defult Color -->
+
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="red">#FF1744</color>
+
+    <!-- Use This Defult Color -->
+
+
+    <!-- Use This Custom Color -->
+
+    <color name="offWhite">#ecf0f3</color>
+    <color name="highlight">#ffffff</color>
+    <color name="shadow_color">#2C2A2A</color>
+    <color name="lightYellow">#FFD600</color>
+    <color name="reflection">#8D6E63</color>
+    <color name="deepPink">#FF4081</color>
+    <color name="darkSkyBlue">#00E5FF</color>
+    <color name="lightGray">#9A9C9B</color>
+    <color name="like_red">#C64260</color>
+    <color name="bargundyColor">#9F0028</color>
+    <color name="lightPink">#FED3D4</color>
+    <color name="darkPink">#CBA3A4</color>
+    <color name="darkYellow">#F67E30</color>
+    <color name="darkRed">#B8275E</color>
+    <color name="darkPurple">#b82782</color>
+    <color name="vividBargundy">#9f1d35</color>
+    <color name="verMillion">#e34234</color>
+    <color name="cardinal">#990000</color>
+    <color name="gold">#ffb300</color>
+    <color name="brown">#bb6528</color>
+    <color name="pink">#D4AAB8</color>
+    <color name="hhh">#B8CDEC</color>
+    <color name="moreDarkSky">#00cee6</color>
+    <color name="choclate">#3f000f</color>
+    <color name="statusBar">#FF4081</color>
+    <color name="mainBackgroundColor">#F0F0F0</color>
+    <color name="stockColor">#2F323F</color>
+    <color name="cardViewColor">#F7F7F7</color>
+    <color name="firstChoiceBg">#D6D6D6</color>
+    <color name="firstChoiceCard">#E0E0E0</color>
+
+</resources>
