@@ -113,7 +113,6 @@ public class MyHorizontalAdapter extends RecyclerView.Adapter<MyHorizontalAdapte
 	public void addItem(String videoId, String title) {
 		ArrayList<String> newIds = new ArrayList<>(videoIdsArray);
 		ArrayList<String> newTitles = new ArrayList<>(videoTitleArray);
-		
 		newIds.add(videoId);
 		newTitles.add(title);
 		

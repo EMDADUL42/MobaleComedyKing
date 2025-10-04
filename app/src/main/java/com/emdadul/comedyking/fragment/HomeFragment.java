@@ -33,6 +33,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
+/*
+This App Made By Md Emdadul Huqe
+mdemdadulhuqe01@gmail.com
+01928077542
+*/
+
+
+
+
 public class HomeFragment extends Fragment {
 	
 	EPlayer ePlayer;
@@ -57,41 +67,25 @@ public class HomeFragment extends Fragment {
 		
 		
 		comedyKing = new ComedyKing(requireActivity());
-		
-		
 		getServerResponse();
-		//checkAndDataShowDialog();
-		//Utils.checkAndDataShowDialog(requireActivity());
 		
 		
 		
-		binding.recyclerView.setEdgeEffectFactory(new RecyclerView.EdgeEffectFactory() {
-			@NonNull
-			@Override
-			protected EdgeEffect createEdgeEffect(@NonNull RecyclerView view, int direction) {
-				EdgeEffect edgeEffect = new EdgeEffect(view.getContext());
-				// transparency color দিয়ে shadow effect
-				edgeEffect.setColor(Color.parseColor("#FBB601"));
-				return edgeEffect;
-			}
-		});
 		
-		
-		
-		Toast.makeText(requireActivity(),"Successfully Upload To Githib",Toast.LENGTH_SHORT).show();
-		
-		
+
 		
 		
 		return binding.getRoot();
 		
 		
-	}
+	}//onCreate End Here============================================
 	
 	
 	
 	
-	
+	//===============================================================
+	//Server Response
+	//===============================================================
 	
 	
 	public void getServerResponse() {
@@ -137,8 +131,10 @@ public class HomeFragment extends Fragment {
 						
 						
 						
-						} catch (JSONException e) {
+					} catch (JSONException e) {
+						
 						throw new RuntimeException(e);
+						
 					}
 					
 				}
@@ -160,7 +156,7 @@ public class HomeFragment extends Fragment {
 						.show();
 					});
 					
-					//new AlertDialog.Builder(requireActivity()).setMessage("Please Check Internet And Restart").show();
+					
 					
 				}
 			});
@@ -169,6 +165,11 @@ public class HomeFragment extends Fragment {
 	}
 	
 	
+	
+	
+	//===============================================================
+	//Server Response
+	//===============================================================
 	
 	
 	

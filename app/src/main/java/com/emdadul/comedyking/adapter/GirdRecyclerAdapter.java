@@ -18,6 +18,15 @@ import java.util.Collections;
 
 
 
+
+/*
+This App Made By Md Emdadul Huqe
+mdemdadulhuqe01@gmail.com
+01928077542
+*/
+
+
+
 public class GirdRecyclerAdapter extends RecyclerView.Adapter<GirdRecyclerAdapter.MyViewHolder> {
 	
 	private Context context;

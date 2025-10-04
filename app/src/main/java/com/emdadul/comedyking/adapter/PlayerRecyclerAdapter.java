@@ -11,6 +11,11 @@ import java.util.ArrayList;
 
 
 
+/*
+This App Made By Md Emdadul Huqe
+mdemdadulhuqe01@gmail.com
+01928077542
+*/
 
 
 public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAdapter.MyViewHolder> {
@@ -49,7 +54,7 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
 		String videoId = videoIdArray.get(position);
 		String videoTitle = titleArray.get(position);
 		
-		// Load YouTube thumbnail
+		
 		String thumbnailUrl = "https://img.youtube.com/vi/" + videoId + "/0.jpg";
 		Glide.with(context)
 		.load(thumbnailUrl)
@@ -57,7 +62,7 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
 		
 		holder.binding.contentTitle.setText(videoTitle);
 		
-		// 🔥 Item click
+		
 		holder.itemView.setOnClickListener(v -> {
 			if (listener != null) listener.onItemClick(position);
 		});

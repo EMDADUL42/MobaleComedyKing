@@ -21,13 +21,21 @@ import java.util.List;
 
 
 
+
+/*
+This App Made By Md Emdadul Huqe
+mdemdadulhuqe01@gmail.com
+01928077542
+*/
+
+
+
 public class PlayerActivity extends BaseActivity<PlayerActivityBinding> {
 	
 	ArrayList<String> videoTitles = new ArrayList<>();
 	ArrayList<String> videoIds = new ArrayList<>();
 	EPlayer ePlayer;
 	String myId;
-	
 	private int currentVideoIndex = 0;
 	private static final long ONE_DAY = 24 * 60 * 60 * 1000L;
 	private static final String PLAYLIST_ID = "UUkKDpnzIG29MA--Sh6oOtWg";
@@ -86,7 +94,7 @@ public class PlayerActivity extends BaseActivity<PlayerActivityBinding> {
 			fetchPlaylistFromServer();
 		}
 		
-		getInfo();
+		//getInfo();
 	}
 	
 	private void setupRecyclerAndPlayer(List<String> ids) {
@@ -149,6 +157,9 @@ public class PlayerActivity extends BaseActivity<PlayerActivityBinding> {
 	}
 	
 	
+	/*
+	
+	
 	public void getInfo() {
 		VideoInfoRepository infoRepository = new VideoInfoRepository(this);
 		infoRepository.getInfo(PLAYLIST_ID, new ResponseListener() {
@@ -159,5 +170,5 @@ public class PlayerActivity extends BaseActivity<PlayerActivityBinding> {
 				.show();
 			}
 		});
-	}
+	}*/
 }

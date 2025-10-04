@@ -21,6 +21,14 @@ import com.emdadul.comedyking.fragment.HomeFragment;
 
 
 
+/*
+This App Made By Md Emdadul Huqe
+mdemdadulhuqe01@gmail.com
+01928077542
+*/
+
+
+
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
 	
 	ActivityMainBinding binding;
