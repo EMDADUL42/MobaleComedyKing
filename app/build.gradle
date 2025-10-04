@@ -42,7 +42,7 @@ dependencies {
 	//implementation "com.squareup.okhttp3:okhttp:5.1.0"
 	implementation files('libs/EPlayer-release.aar')
 
-	implementation "com.squareup.okhttp3:okhttp:5.1.0"
+
 	
 
     implementation files('libs/okhttp-4.9.1.jar')
