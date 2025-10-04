@@ -11,6 +11,9 @@ import com.emdadul.comedyking.base.BaseActivity;
 import com.emdadul.comedyking.databinding.FragmentGridBinding;
 import java.util.ArrayList;
 
+
+
+
 public class GridActivity extends BaseActivity<FragmentGridBinding> {
 	
 	public GridActivity() {

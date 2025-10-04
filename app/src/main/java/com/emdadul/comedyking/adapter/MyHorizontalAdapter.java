@@ -6,28 +6,27 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.emdadul.comedyking.R;
 import com.emdadul.comedyking.activity.PlayerActivity;
 import com.emdadul.comedyking.databinding.HorizontalRecyclerBinding;
-
 import java.util.ArrayList;
+
+
 
 public class MyHorizontalAdapter extends RecyclerView.Adapter<MyHorizontalAdapter.ViewHolder> {
 	
 	private final Context context;
-	private final ArrayList<String> videoIds;
-	private final ArrayList<String> titles;
+	private final ArrayList<String> videoIdsArray;
+	private final ArrayList<String> videoTitleArray;
 	
 	public MyHorizontalAdapter(Context context, ArrayList<String> videoIds, ArrayList<String> titles) {
 		this.context = context;
-		this.videoIds = videoIds;
-		this.titles = titles;
+		this.videoIdsArray = videoIds;
+		this.videoTitleArray = titles;
 	}
 	
 	@NonNull
@@ -40,10 +39,10 @@ public class MyHorizontalAdapter extends RecyclerView.Adapter<MyHorizontalAdapte
 	
 	@Override
 	public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-		String videoId = videoIds.get(position);
-		String title = titles.size() > position ? titles.get(position) : "";
+		String getVideoId = videoIdsArray.get(position);
+		String title = videoTitleArray.size() > position ? videoTitleArray.get(position) : "";
 		
-		String thumbUrl = "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
+		String thumbUrl = "https://img.youtube.com/vi/" + getVideoId + "/hqdefault.jpg";
 		Glide.with(context).load(thumbUrl).override(480, 660).into(holder.binding.horizontalImageItem);
 		
 		String customTitle = "Comedy_Video_" + title;
@@ -61,14 +60,20 @@ public class MyHorizontalAdapter extends RecyclerView.Adapter<MyHorizontalAdapte
 		
 		holder.binding.getRoot().setOnClickListener(v -> {
 			Intent intent = new Intent(context, PlayerActivity.class);
-			intent.putExtra("VIDEO_ID", videoId);
-			v.getContext().startActivity(intent);
+			intent.putStringArrayListExtra("videoIdsArray",videoIdsArray);
+			intent.putStringArrayListExtra("videoTitleArray",videoTitleArray);
+			intent.putExtra("videoId",getVideoId);
+			context.startActivity(intent);
 		});
+		
+		
+		
+		
 	}
 	
 	@Override
 	public int getItemCount() {
-		return videoIds.size();
+		return videoIdsArray.size();
 	}
 	
 	// ✅ DiffUtil দিয়ে updateData
@@ -76,7 +81,7 @@ public class MyHorizontalAdapter extends RecyclerView.Adapter<MyHorizontalAdapte
 		DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
 			@Override
 			public int getOldListSize() {
-				return videoIds.size();
+				return videoIdsArray.size();
 			}
 			
 			@Override
@@ -86,28 +91,28 @@ public class MyHorizontalAdapter extends RecyclerView.Adapter<MyHorizontalAdapte
 			
 			@Override
 			public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-				return videoIds.get(oldItemPosition).equals(newVideoIds.get(newItemPosition));
+				return videoIdsArray.get(oldItemPosition).equals(newVideoIds.get(newItemPosition));
 			}
 			
 			@Override
 			public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-				return titles.get(oldItemPosition).equals(newTitles.get(newItemPosition));
+				return videoTitleArray.get(oldItemPosition).equals(newTitles.get(newItemPosition));
 			}
 		});
 		
-		videoIds.clear();
-		videoIds.addAll(newVideoIds);
+		videoIdsArray.clear();
+		videoIdsArray.addAll(newVideoIds);
 		
-		titles.clear();
-		titles.addAll(newTitles);
+		videoTitleArray.clear();
+		videoTitleArray.addAll(newTitles);
 		
 		diffResult.dispatchUpdatesTo(this);
 	}
 	
 	// ✅ আগের addItem method safe রাখতে
 	public void addItem(String videoId, String title) {
-		ArrayList<String> newIds = new ArrayList<>(videoIds);
-		ArrayList<String> newTitles = new ArrayList<>(titles);
+		ArrayList<String> newIds = new ArrayList<>(videoIdsArray);
+		ArrayList<String> newTitles = new ArrayList<>(videoTitleArray);
 		
 		newIds.add(videoId);
 		newTitles.add(title);

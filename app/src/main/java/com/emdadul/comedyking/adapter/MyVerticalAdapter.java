@@ -30,6 +30,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+
+
+
+
 public class MyVerticalAdapter extends RecyclerView.Adapter<MyVerticalAdapter.MyViewHolder> {
 	
 	private final ArrayList<HashMap<String, String>> arrayList;

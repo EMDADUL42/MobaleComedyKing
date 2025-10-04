@@ -18,6 +18,9 @@ import com.emdadul.comedyking.base.BaseActivity;
 import com.emdadul.comedyking.databinding.ActivityMainBinding;
 import com.emdadul.comedyking.fragment.HomeFragment;
 
+
+
+
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
 	
 	ActivityMainBinding binding;

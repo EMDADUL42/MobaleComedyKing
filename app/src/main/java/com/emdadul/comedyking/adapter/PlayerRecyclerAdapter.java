@@ -3,14 +3,15 @@ package com.emdadul.comedyking.adapter;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.emdadul.comedyking.databinding.PlayerRecyclerItemBinding;
-
 import java.util.ArrayList;
+
+
+
+
 
 public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAdapter.MyViewHolder> {
 	

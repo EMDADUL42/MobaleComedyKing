@@ -2,14 +2,12 @@ package com.emdadul.comedyking.activity;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.activity.EdgeToEdge;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
 import com.emdadul.EPlayer;
 import com.emdadul.VideoInfoRepository;
 import com.emdadul.comedyking.adapter.PlayerRecyclerAdapter;
@@ -17,11 +15,11 @@ import com.emdadul.comedyking.base.BaseActivity;
 import com.emdadul.comedyking.databinding.PlayerActivityBinding;
 import com.emdadul.listener.OnEventListener;
 import com.emdadul.listener.ResponseListener;
-
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 public class PlayerActivity extends BaseActivity<PlayerActivityBinding> {
 	
@@ -149,6 +147,7 @@ public class PlayerActivity extends BaseActivity<PlayerActivityBinding> {
 			}
 		});
 	}
+	
 	
 	public void getInfo() {
 		VideoInfoRepository infoRepository = new VideoInfoRepository(this);

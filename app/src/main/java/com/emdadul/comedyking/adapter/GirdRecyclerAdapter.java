@@ -1,4 +1,3 @@
-
 package com.emdadul.comedyking.adapter;
 
 import android.content.Context;
@@ -14,9 +13,10 @@ import com.bumptech.glide.Glide;
 import com.emdadul.comedyking.R;
 import com.emdadul.comedyking.activity.PlayerActivity;
 import com.emdadul.comedyking.databinding.GridRecyclerItemBinding;
-
 import java.util.ArrayList;
 import java.util.Collections;
+
+
 
 public class GirdRecyclerAdapter extends RecyclerView.Adapter<GirdRecyclerAdapter.MyViewHolder> {
 	
@@ -75,14 +75,15 @@ public class GirdRecyclerAdapter extends RecyclerView.Adapter<GirdRecyclerAdapte
 		
 		String getVideoId = videoIdArray.get(position);
 		String getVideoTitle = videoTitleArray.get(position);
-		
 		int splitIndex = Math.min(10, getVideoTitle.length());
 		String part1 = getVideoTitle.substring(0, splitIndex);
 		String part2 = getVideoTitle.substring(splitIndex);
 		String getTitle = part1 + part2;
-		
 		String customTitle = "Comedy_Video_" + getTitle;
 		holder.binding.title.setText(customTitle);
+		
+		
+		
 		
 		Animation animation = AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.slide_in_left);
 		Animation animation1 = AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.slide_in_right);
@@ -112,16 +113,18 @@ public class GirdRecyclerAdapter extends RecyclerView.Adapter<GirdRecyclerAdapte
 		
 		
 		
-		
 		holder.binding.getRoot().setOnClickListener(v->{
 			
 			Intent intent = new Intent(context, PlayerActivity.class);
-            intent.putStringArrayListExtra("videoIdsArray",videoIdArray);
+			intent.putStringArrayListExtra("videoIdsArray",videoIdArray);
 			intent.putStringArrayListExtra("videoTitleArray",videoTitleArray);
 			intent.putExtra("videoId",getVideoId);
 			context.startActivity(intent);
-            
+			
+			
 		});
+		
+		
 	}
 	
 	@Override
