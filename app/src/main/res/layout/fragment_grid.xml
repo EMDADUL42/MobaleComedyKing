@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3A1A4A" >
+    android:background="#660102" >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -12,7 +12,7 @@
 		android:layout_margin="@dimen/_3sdp"
         layout_constraintStart_toStartOf="parent"
         layout_constraintTop_toTopOf="parent"
-        android:background="#3A1A4A" >
+        android:background="#4B0082" >
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"

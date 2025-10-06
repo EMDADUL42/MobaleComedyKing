@@ -1,5 +1,7 @@
 package com.emdadul.comedyking.activity;
 
+import androidx.core.view.GravityCompat;
+import static androidx.core.view.GravityCompat.START;
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,7 +33,7 @@ mdemdadulhuqe01@gmail.com
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
 	
-	ActivityMainBinding binding;
+	//ActivityMainBinding binding;
 	private long backPressedTime = 0;
 	
 	public MainActivity() {
@@ -49,6 +51,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 			Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 			v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
 			return insets;
+		});
+		
+		
+		
+		
+		binding.menuIcon.setOnClickListener(v->{
+			
+			if (binding.main.isDrawerOpen(GravityCompat.END)){
+				
+				closeDrawer();
+			}else {
+				
+				binding.main.openDrawer(GravityCompat.END);
+			}
+			
+			
+			
 		});
 		
 		
@@ -95,7 +114,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 			}
 		});
 	}
+	
+	
+	private void closeDrawer() {
+        binding.main.closeDrawer(GravityCompat.END);
+    }
 
+  
+  
+  
+  
+  
+  
   
 }
 

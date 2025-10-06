@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@drawable/custom_bg_1"
+    android:background="@drawable/button_bg"
     android:orientation="vertical" >
 
     <androidx.appcompat.widget.AppCompatImageView

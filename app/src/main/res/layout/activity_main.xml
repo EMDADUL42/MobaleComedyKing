@@ -4,7 +4,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3A1A4A"
+    android:background="#660102"
     tools:context=".activity.MainActivity"
     tools:openDrawer="right" >
 
@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:layout_marginEnd="@dimen/_3sdp"
         android:layout_marginStart="@dimen/_3sdp"
-        android:background="#3A1A4A"
+        android:background="#660102"
         android:fitsSystemWindows="true" >
 
         <com.google.android.material.appbar.AppBarLayout
@@ -32,7 +32,7 @@
                 style="@style/Widget.MaterialComponents.Toolbar.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="#3A1A4A"
+                android:background="#660102"
                 app:titleTextAppearance="@style/ToolbarTitleStyle"
                 app:titleTextColor="?android:textColorPrimary" >
 
@@ -99,5 +99,18 @@
             app:lottie_loop="true"
             app:lottie_rawRes="@raw/progressbar" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:layout_marginBottom="@dimen/_16sdp"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_35sdp"
+        android:fitsSystemWindows="true" >
+
+        <include layout="@layout/custom_drawer_navigation" />
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

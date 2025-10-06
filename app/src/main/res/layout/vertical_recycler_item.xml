@@ -3,18 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
-	
-	
+
     <RelativeLayout
-		android:id="@+id/cardView"
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-		android:background="@drawable/custom_bg_1"
         android:layout_marginBottom="@dimen/_4sdp"
         android:layout_marginEnd="@dimen/_4sdp"
         android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_4sdp" >
+        android:layout_marginTop="@dimen/_4sdp"
+        android:background="@drawable/button_bg" >
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
@@ -24,6 +23,7 @@
             android:layout_margin="5dp"
             android:fontFamily="@font/my_font_2"
             android:maxLines="1"
+			android:padding="@dimen/_5sdp"
             android:text="Comedy King"
             android:textColor="#E9CC84"
             android:textSize="@dimen/_12sdp"

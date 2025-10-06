@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    
+
+    <group>
+
+        <item android:title="About Us">
+
+            <menu>
+
+
+                <item
+                    android:id="@+id/policy"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:icon="@mipmap/ic_launcher"
+                    android:title="Privacy Policy" />
+
+                <item
+                    android:id="@+id/developer"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:icon="@mipmap/ic_launcher"
+                    android:title="About Us" />
+            </menu>
+        </item>
+    </group>
+
+</menu>

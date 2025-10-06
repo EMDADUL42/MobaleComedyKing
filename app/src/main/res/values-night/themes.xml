@@ -32,31 +32,25 @@
         <item name="titleTextColor">@color/white</item>
     </style>
 
-    <!--
-<style name="titleTextSize">
-<item name="android:textSize">30sp</item>
-<item name="android:textColor">@color/red</item>
-<item name="android:textStyle">bold</item>
-</style>
+    <style name="titleTextSize">
+        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
-<style name="drawerTheme">
-<item name="colorPrimary">@color/red</item>
-<item name="colorControlHighlight">@color/red</item>
-</style>
+    <style name="drawerTheme">
+        <item name="colorPrimary">@color/red</item>
+        <item name="colorControlHighlight">@color/red</item>
+    </style>
 
-<style name="drawerItemTextSize">
-<item name="android:textSize">30sp</item>
-<item name="android:textStyle">bold</item>
-</style>
+    <style name="drawerItemTextSize">
+        <item name="android:textSize">30sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
-<style name="textSize">
-<item name="android:textSize">20sp</item>
-<item name="android:textStyle">bold</item>
-</style>
-
-<style name="customShape">
-<item name="neumorph_cornerSize">2dp</item>
-</style>
-    -->
+    <style name="textSize">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
 </resources>
