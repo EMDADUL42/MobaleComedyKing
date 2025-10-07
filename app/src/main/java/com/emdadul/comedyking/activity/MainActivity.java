@@ -1,5 +1,8 @@
 package com.emdadul.comedyking.activity;
 
+import android.content.Context;
+import android.net.Uri;
+import android.content.Intent;
 import androidx.core.view.GravityCompat;
 import static androidx.core.view.GravityCompat.START;
 import android.os.Bundle;
@@ -80,17 +83,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 		
 		
 		loadFragment(new HomeFragment());
-		
-		
-		
 		navigationClickListener();
-		
-		
-		
-	
-	
-	
-	
 		backPressed();
 		
 		
@@ -119,8 +112,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 		binding.customNavigationView.policy.setOnClickListener(v->{
 			
 			closeDrawer();
+			String url = "https://mlwbd.com";
+			try {
+				
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+				intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+				startActivity(intent);
+				
+			} catch (Exception e) {
+				
+				Toast.makeText(this, "No browser found to open the link", Toast.LENGTH_SHORT).show();
+			}
 			
-			Toast.makeText(MainActivity.this, "Policy", Toast.LENGTH_SHORT).show();
 		});
 		
 		
@@ -169,9 +172,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
 	private void closeDrawer() {
-        binding.main.closeDrawer(GravityCompat.END);
-    }
+		
+		binding.main.closeDrawer(GravityCompat.END);
+	}
 
   
   
