@@ -23,7 +23,7 @@
             android:background="@drawable/image_round"
             android:clipToOutline="true"
             android:scaleType="centerCrop"
-            app:srcCompat="@drawable/e" />
+            app:srcCompat="@drawable/app_icon" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
