@@ -18,7 +18,9 @@ import androidx.fragment.app.Fragment;
 import com.emdadul.comedyking.R;
 import com.emdadul.comedyking.base.BaseActivity;
 import com.emdadul.comedyking.databinding.ActivityMainBinding;
+import com.emdadul.comedyking.databinding.CustomDrawerNavigationBinding;
 import com.emdadul.comedyking.fragment.HomeFragment;
+import com.google.android.material.navigation.NavigationView;
 
 
 
@@ -35,6 +37,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 	
 	//ActivityMainBinding binding;
 	private long backPressedTime = 0;
+	NavigationView navigationView;
+	CustomDrawerNavigationBinding navigationBinding;
 	
 	public MainActivity() {
 		super(ActivityMainBinding::inflate);
@@ -72,7 +76,22 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 		
 		
 		
+		
+		
+		
 		loadFragment(new HomeFragment());
+		
+		
+		
+		navigationClickListener();
+		
+		
+		
+	
+	
+	
+	
+		backPressed();
 		
 		
 	}//onCreate End Here
@@ -90,6 +109,38 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 		ft.commit();
 		
 	}
+	
+	
+	
+	
+	public void navigationClickListener(){
+		
+		
+		binding.customNavigationView.policy.setOnClickListener(v->{
+			
+			closeDrawer();
+			
+			Toast.makeText(MainActivity.this, "Policy", Toast.LENGTH_SHORT).show();
+		});
+		
+		
+		binding.customNavigationView.disclaimar.setOnClickListener(v->{
+			
+			closeDrawer();
+			
+			Toast.makeText(MainActivity.this, "Disclaimar", Toast.LENGTH_SHORT).show();
+		});
+		
+		
+		binding.customNavigationView.aboutUs.setOnClickListener(v->{
+			
+			closeDrawer();
+			
+			Toast.makeText(MainActivity.this, "AboutUs", Toast.LENGTH_SHORT).show();
+		});
+		
+	
+	}
 
         
 
@@ -103,6 +154,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 		getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
 			@Override
 			public void handleOnBackPressed() {
+				
+				closeDrawer();
 				
 				if (backPressedTime + 2000 > System.currentTimeMillis()) {
 					finish();  // Exit app

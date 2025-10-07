@@ -110,7 +110,10 @@
         android:layout_marginTop="@dimen/_35sdp"
         android:fitsSystemWindows="true" >
 
-        <include layout="@layout/custom_drawer_navigation" />
+        <include layout="@layout/custom_drawer_navigation"
+			android:id="@+id/customNavigationView"
+			
+			/>
     </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
