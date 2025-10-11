@@ -16,6 +16,6 @@
 	},
 	"dex": {
 		"isDexLibrariesOnPrebuild": "false",
-		"excludedClassPaths": "9e7ee18a1a5dd5bf070c7e6f706ccc9c,3c42be5ea7cbf3635716abbb429cb90d"
+		"excludedClassPaths": "9e7ee18a1a5dd5bf070c7e6f706ccc9c,3c42be5ea7cbf3635716abbb429cb90d,73d0db6af7445088858d51a1a6843b75"
 	}
 }
