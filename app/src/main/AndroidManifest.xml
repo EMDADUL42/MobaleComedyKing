@@ -11,6 +11,7 @@
         android:icon="@drawable/app_icon"
         android:label="@string/app_name"
         android:roundIcon="@drawable/app_icon"
+		android:hardwareAccelerated="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity
@@ -23,13 +24,16 @@
             </intent-filter>
         </activity>
         <activity
+			android:hardwareAccelerated="true"
             android:name=".activity.GridActivity"
             android:exported="false" />
         <activity
+			android:hardwareAccelerated="true"
             android:name=".activity.MainActivity"
             android:exported="false" />
         <activity
             android:name=".activity.PlayerActivity"
+		
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:hardwareAccelerated="true" />

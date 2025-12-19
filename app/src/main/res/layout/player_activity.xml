@@ -6,7 +6,7 @@
     android:background="#3A1A4A"
     android:orientation="vertical" >
 
-    <com.emdadul.EPlayer
+    <com.comedyKing.eplayer.EPlayer
         android:id="@+id/ePlayer"
 		android:visibility="visible"
         android:layout_width="match_parent"

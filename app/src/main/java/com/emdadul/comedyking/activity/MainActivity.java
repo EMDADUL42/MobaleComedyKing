@@ -22,6 +22,7 @@ import com.emdadul.comedyking.R;
 import com.emdadul.comedyking.base.BaseActivity;
 import com.emdadul.comedyking.databinding.ActivityMainBinding;
 import com.emdadul.comedyking.databinding.CustomDrawerNavigationBinding;
+import com.emdadul.comedyking.datahelper.Utils;
 import com.emdadul.comedyking.fragment.HomeFragment;
 import com.google.android.material.navigation.NavigationView;
 
@@ -42,6 +43,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 	private long backPressedTime = 0;
 	NavigationView navigationView;
 	CustomDrawerNavigationBinding navigationBinding;
+	Utils utils;
 	
 	public MainActivity() {
 		super(ActivityMainBinding::inflate);
@@ -59,7 +61,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 			v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
 			return insets;
 		});
-		
+		utils = new Utils();
+		//utils.checkForUpdate(this);
 		
 		
 		

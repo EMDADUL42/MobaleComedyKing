@@ -1,42 +1,36 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recyclerLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/vertical_recycle_bg" >
 
-    <RelativeLayout
-        android:id="@+id/cardView"
-        android:layout_width="match_parent"
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/contentTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="@dimen/_4sdp"
-        android:layout_marginEnd="@dimen/_4sdp"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_4sdp"
-        android:background="@drawable/button_bg" >
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/my_font_2"
+        android:text="Content Title"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/_17sdp"
+        android:textStyle="bold" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_margin="5dp"
-            android:fontFamily="@font/my_font_2"
-            android:maxLines="1"
-			android:padding="@dimen/_5sdp"
-            android:text="Comedy King"
-            android:textColor="#E9CC84"
-            android:textSize="@dimen/_12sdp"
-            android:textStyle="bold" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/arrow"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentRight="true"
-            android:layout_margin="5dp"
-            app:srcCompat="@drawable/arrow" />
-    </RelativeLayout>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/arrow"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_37sdp"
+        android:layout_margin="5dp"
+        app:layout_constraintBottom_toTopOf="@id/recyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/arrow_right" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -44,9 +38,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/cardView"
         android:layout_marginTop="@dimen/_3sdp"
+        app:layout_constraintTop_toBottomOf="@id/contentTitle"
         android:nestedScrollingEnabled="false"
         android:orientation="horizontal"
         android:paddingBottom="3dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

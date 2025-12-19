@@ -40,7 +40,9 @@ dependencies {
 	
 	implementation "com.airbnb.android:lottie:6.6.7"
 	//implementation "com.squareup.okhttp3:okhttp:5.1.0"
-	implementation files('libs/EPlayer-release.aar')
+
+	//implementation files('libs/Jplayer-release.aar')
+	implementation "androidx.annotation:annotation:1.7.0"
 
 	
 
@@ -60,4 +62,5 @@ dependencies {
 	//implementation 'de.hdodenhof:circleimageview:3.1.0'
 	//implementation 'com.github.fornewid:neumorphism:0.3.2'
 	//implementation 'com.romainpiel.shimmer:library:1.4.0'
+	implementation project(':EPlayer')
 }

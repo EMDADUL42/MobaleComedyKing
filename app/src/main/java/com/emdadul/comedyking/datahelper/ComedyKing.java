@@ -1,17 +1,23 @@
-
 package com.emdadul.comedyking.datahelper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.emdadul.comedyking.R;
-import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
-import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -29,9 +35,7 @@ public class ComedyKing {
 	private static final String KEY_VIDEO_IDS = "video_ids";
 	private static final String KEY_LAST_FETCH = "last_fetch";
 	
-	// 24 hours in millis
-	private static final long EXPIRY_DURATION = 24 * 60 * 60 * 1000;
-	
+	private static final long EXPIRY_DURATION = 24 * 60 * 60 * 1000; // 24 Hrs
 	
 	public ComedyKing(Context context) {
 		client = new OkHttpClient.Builder()
@@ -42,6 +46,42 @@ public class ComedyKing {
 		baseUrl = context.getString(R.string.baseUrl);
 	}
 	
+	
+	// -------------------------------------------------------------------------
+	// FILE READ / WRITE HELPERS
+	// -------------------------------------------------------------------------
+	private void writeToFile(Context context, String fileName, String data) {
+		try {
+			FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+			fos.write(data.getBytes());
+			fos.close();
+		} catch (Exception e) { e.printStackTrace(); }
+	}
+	
+	private String readFromFile(Context context, String fileName) {
+		try {
+			FileInputStream fis = context.openFileInput(fileName);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			
+			byte[] buffer = new byte[2048];
+			int read;
+			
+			while ((read = fis.read(buffer)) != -1) {
+				bos.write(buffer, 0, read);
+			}
+			
+			fis.close();
+			return bos.toString();
+			
+			} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	
+	// -------------------------------------------------------------------------
+	// GET RESPONSE (Cached + API)
+	// -------------------------------------------------------------------------
 	public void getResponse(@NonNull Context context,
 	@NonNull String url,
 	@NonNull ResponseHandler success,
@@ -50,20 +90,24 @@ public class ComedyKing {
 		String fullUrl = baseUrl + url;
 		String key = Utils.getKey(fullUrl);
 		
-		SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE);
-		long lastSavedTime = prefs.getLong(key + "time", 0);
-		long currentTime = System.currentTimeMillis();
+		String cacheFile = key + ".json";     // file name
+		String timeKey = key + "_time";       // timestamp key
 		
-		// Check cache validity (24 hours)
-		if (prefs.contains(key) && (currentTime - lastSavedTime) < EXPIRY_DURATION) {
-			String cachedResponse = prefs.getString(key, null);
-			if (cachedResponse != null) {
-				success.onSuccess(cachedResponse);
+		SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+		
+		long lastSaved = prefs.getLong(timeKey, 0);
+		long now = System.currentTimeMillis();
+		
+		// ---------------- CHECK FILE CACHE -------------------
+		if ((now - lastSaved) < EXPIRY_DURATION) {
+			String cached = readFromFile(context, cacheFile);
+			if (cached != null) {
+				success.onSuccess(cached);
 				return;
 			}
 		}
 		
-		// Build POST request body
+		// ---------------- CALL SERVER ------------------------
 		RequestBody formBody = new FormBody.Builder()
 		.add("password", "Md_Emdadul_huqe")
 		.build();
@@ -74,230 +118,108 @@ public class ComedyKing {
 		.build();
 		
 		client.newCall(request).enqueue(new Callback() {
+			
 			@Override
 			public void onFailure(@NonNull Call call, @NonNull IOException e) {
-				if (failure != null) {
-					failure.onError(e);
-				}
+				if (failure != null) failure.onError(e);
 			}
 			
 			@Override
 			public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 				if (response.isSuccessful()) {
+					
 					String body = response.body().string();
 					
+					// Save JSON to FILE
+					writeToFile(context, cacheFile, body);
+					
+					// Save timestamp
 					prefs.edit()
-					.putString(key, body)
-					.putLong(key + "time", System.currentTimeMillis())
+					.putLong(timeKey, System.currentTimeMillis())
 					.apply();
 					
 					success.onSuccess(body);
+					
 					} else {
-					if (failure != null) {
-						failure.onError(null);
-					}
+					if (failure != null) failure.onError(null);
 				}
 			}
 		});
 	}
 	
-	// Callback interface for success
+	
+	// -------------------------------------------------------------------------
+	// CALLBACK INTERFACES
+	// -------------------------------------------------------------------------
 	public interface ResponseHandler {
 		void onSuccess(String response);
 	}
 	
-	// Callback interface for failure
 	public interface ErrorHandler {
 		void onError(@Nullable IOException exception);
 	}
 	
+	
+	
+	// -------------------------------------------------------------------------
+	// VIDEO ID SAVE / LOAD USING FILE (NOT SharedPreference)
+	// -------------------------------------------------------------------------
 	public static void saveVideoIds(Context context, String channelId, ArrayList<String> videoIds) {
-		SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
+		
+		String fileName = "video_ids_" + channelId + ".json";
+		
 		Gson gson = new Gson();
 		String json = gson.toJson(videoIds);
 		
-		editor.putString(KEY_VIDEO_IDS + "_" + channelId, json);
-		editor.putLong(KEY_LAST_FETCH + "_" + channelId, System.currentTimeMillis());
-		editor.apply();
+		// Save JSON to file
+		try {
+			FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+			fos.write(json.getBytes());
+			fos.close();
+		} catch (Exception ignored) {}
+		
+		// Save timestamp only in SP (very small)
+		SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+		prefs.edit()
+		.putLong(KEY_LAST_FETCH + "_" + channelId, System.currentTimeMillis())
+		.apply();
 	}
 	
+	
 	public static ArrayList<String> getVideoIds(Context context, String channelId) {
-		SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-		String json = prefs.getString(KEY_VIDEO_IDS + "_" + channelId, null);
 		
-		if (json == null) return new ArrayList<>();
+		String fileName = "video_ids_" + channelId + ".json";
 		
-		Gson gson = new Gson();
-		Type type = new TypeToken<ArrayList<String>>() {}.getType();
-		return gson.fromJson(json, type);
+		try {
+			FileInputStream fis = context.openFileInput(fileName);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			
+			byte[] buffer = new byte[2048];
+			int read;
+			
+			while ((read = fis.read(buffer)) != -1) {
+				bos.write(buffer, 0, read);
+			}
+			
+			fis.close();
+			String json = bos.toString();
+			
+			Gson gson = new Gson();
+			Type type = new TypeToken<ArrayList<String>>() {}.getType();
+			
+			return gson.fromJson(json, type);
+			
+			} catch (Exception e) {
+			return new ArrayList<>();
+		}
 	}
+	
 	
 	public static boolean shouldFetchFromServer(Context context, String channelId) {
 		SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 		long lastFetch = prefs.getLong(KEY_LAST_FETCH + "_" + channelId, 0);
 		long now = System.currentTimeMillis();
 		
-		// Fetch again if more than 24 hours passed
 		return (now - lastFetch) > EXPIRY_DURATION;
 	}
 }
-
-
-/*
-package com.emdadul.comedyking.datahelper;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.emdadul.comedyking.R;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.Gson;
-import java.lang.reflect.Type;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-public class ComedyKing {
-	
-	private final OkHttpClient client;
-	private final String baseUrl;
-	
-	private static final String PREF_NAME = "comedyking_pref";
-	private static final String KEY_VIDEO_IDS = "video_ids";
-	private static final String KEY_LAST_FETCH = "last_fetch";
-	
-	
-	
-	public ComedyKing(Context context) {
-		client = new OkHttpClient.Builder()
-		.connectTimeout(15, TimeUnit.SECONDS)
-		.readTimeout(20, TimeUnit.SECONDS)
-		.build();
-		
-		baseUrl = context.getString(R.string.baseUrl);
-	}
-	
-	public void getResponse(@NonNull Context context,
-	@NonNull String url,
-	@NonNull ResponseHandler success,
-	@Nullable ErrorHandler failure) {
-		
-		String fullUrl = baseUrl + url;
-		String key = Utils.getKey(fullUrl);
-		
-		SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE);
-		long lastSavedTime = prefs.getLong(key + "time", 0);
-		long currentTime = System.currentTimeMillis();
-		
-		// Check cache validity (24 hours)
-		if (prefs.contains(key) && (currentTime - lastSavedTime) < 86400000) {
-			String cachedResponse = prefs.getString(key, null);
-			if (cachedResponse != null) {
-				success.onSuccess(cachedResponse);
-				return;
-			}
-		}
-		
-		// Build POST request body
-		RequestBody formBody = new FormBody.Builder()
-		.add("password", "Md_Emdadul_huqe")
-		.build();
-		
-		Request request = new Request.Builder()
-		.url(fullUrl)
-		.post(formBody)
-		.build();
-		
-		client.newCall(request).enqueue(new Callback() {
-			@Override
-			public void onFailure(@NonNull Call call, @NonNull IOException e) {
-				if (failure != null) {
-					failure.onError(e);
-				}
-			}
-			
-			@Override
-			public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-				if (response.isSuccessful()) {
-					String body = response.body().string();
-					
-					prefs.edit()
-					.putString(key, body)
-					.putLong(key + "time", System.currentTimeMillis())
-					.apply();
-					
-					success.onSuccess(body);
-					} else {
-					if (failure != null) {
-						failure.onError(null);
-					}
-				}
-			}
-		});
-	}
-	
-	// Callback interface for success
-	public interface ResponseHandler {
-		void onSuccess(String response);
-	}
-	
-	// Callback interface for failure
-	public interface ErrorHandler {
-		void onError(@Nullable IOException exception);
-	}
-	
-	
-	
-	
-	
-	
-	public static void saveVideoIds(Context context, String channelId, ArrayList<String> videoIds) {
-		SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
-		Gson gson = new Gson();
-		String json = gson.toJson(videoIds);
-		
-		// save with channelId key
-		editor.putString(KEY_VIDEO_IDS + "_" + channelId, json);
-		editor.putLong(KEY_LAST_FETCH + "_" + channelId, System.currentTimeMillis());
-		editor.apply();
-	}
-	
-	public static ArrayList<String> getVideoIds(Context context, String channelId) {
-		SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-		String json = prefs.getString(KEY_VIDEO_IDS + "_" + channelId, null);
-		
-		if (json == null) return new ArrayList<>();
-		
-		Gson gson = new Gson();
-		Type type = new TypeToken<ArrayList<String>>() {}.getType();
-		return gson.fromJson(json, type);
-	}
-	
-	public static boolean shouldFetchFromServer(Context context, String channelId) {
-		SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-		long lastFetch = prefs.getLong(KEY_LAST_FETCH + "_" + channelId, 0);
-		
-		Calendar lastCal = Calendar.getInstance();
-		lastCal.setTimeInMillis(lastFetch);
-		
-		Calendar now = Calendar.getInstance();
-		
-		// check if it's a new day for this channel
-		return now.get(Calendar.YEAR) != lastCal.get(Calendar.YEAR) ||
-		now.get(Calendar.DAY_OF_YEAR) != lastCal.get(Calendar.DAY_OF_YEAR);
-	}
-	
-	
-}
-*/

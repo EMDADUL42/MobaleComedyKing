@@ -89,7 +89,7 @@ public class GirdRecyclerAdapter extends RecyclerView.Adapter<GirdRecyclerAdapte
 		String part2 = getVideoTitle.substring(splitIndex);
 		String getTitle = part1 + part2;
 		String customTitle = "Comedy_Video_" + getTitle;
-		holder.binding.title.setText(customTitle);
+		holder.binding.contentTitle.setText(customTitle);
 		
 		
 		
@@ -98,15 +98,15 @@ public class GirdRecyclerAdapter extends RecyclerView.Adapter<GirdRecyclerAdapte
 		Animation animation1 = AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.slide_in_right);
 		
 		if (position % 2 == 0) {
-			holder.binding.title.setMaxLines(3);
+			holder.binding.contentTitle.setMaxLines(3);
 			holder.itemView.startAnimation(animation);
 			} else {
-			holder.binding.title.setMaxLines(2);
+			holder.binding.contentTitle.setMaxLines(2);
 			holder.itemView.startAnimation(animation1);
 		}
 		
 		String thumbUrl = "https://img.youtube.com/vi/" + getVideoId + "/hqdefault.jpg";
-		Glide.with(context).load(thumbUrl).override(480, 660).into(holder.binding.thumb);
+		Glide.with(context).load(thumbUrl).override(480, 660).into(holder.binding.horizontalImageItem);
 		
 		holder.binding.cardView.setOnClickListener(new View.OnClickListener() {
 			@Override

@@ -1,0 +1,30 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item><layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+            <!-- Bottom/Left/Right shadow (black) -->
+            <item android:top="1dp"><shape android:shape="rectangle">
+                    <solid android:color="#000000" />
+
+                   
+                </shape></item>
+
+            <!-- Top shadow -->
+            <item android:bottom="6dp" android:left="2dp" android:right="2dp"><shape android:shape="rectangle">
+                    <solid android:color="#ffffff" />
+
+                   
+                </shape></item>
+
+            <!-- FF8C00,FFD700 -->
+
+
+            <!-- Inner background with gradient -->
+            <item android:bottom="2dp" android:left="1dp" android:right="1dp" android:top="1dp"><shape android:shape="rectangle">
+                    <gradient android:angle="45" android:endColor="#FF8C00" android:startColor="#3D4248" />
+
+                 
+                </shape></item>
+        </layer-list></item>
+
+</selector>

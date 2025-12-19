@@ -8,14 +8,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.activity.EdgeToEdge;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-import com.emdadul.EPlayer;
-import com.emdadul.VideoInfoRepository;
+import com.comedyKing.eplayer.EPlayer;
 import com.emdadul.comedyking.adapter.PlayerRecyclerAdapter;
 import com.emdadul.comedyking.base.BaseActivity;
 import com.emdadul.comedyking.databinding.PlayerActivityBinding;
-import com.emdadul.listener.OnEventListener;
-import com.emdadul.listener.ResponseListener;
-import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +35,7 @@ public class PlayerActivity extends BaseActivity<PlayerActivityBinding> {
 	private int currentVideoIndex = 0;
 	private static final long ONE_DAY = 24 * 60 * 60 * 1000L;
 	private static final String PLAYLIST_ID = "UUkKDpnzIG29MA--Sh6oOtWg";
+
 	
 	public PlayerActivity() {
 		super(PlayerActivityBinding::inflate);
@@ -77,7 +74,7 @@ public class PlayerActivity extends BaseActivity<PlayerActivityBinding> {
 		videoTitles,
 		position -> {
 			currentVideoIndex = position;
-			ePlayer.loadVideo(videoIds.get(position));
+			ePlayer.loadByVideoId(videoIds.get(position));
 			binding.recyclerView.smoothScrollToPosition(position);
 		}
 		);
@@ -101,74 +98,85 @@ public class PlayerActivity extends BaseActivity<PlayerActivityBinding> {
 		if (ids == null || ids.isEmpty()) return;
 		
 		// Play first video by default
-		ePlayer.cueVideo(ids.get(0), 0);
+		ePlayer.setPlaylistById(ids.get(0));
 		currentVideoIndex = 0;
 		
-		ePlayer.addOnEventListener(new OnEventListener() {
-			@Override
-			public void onPlayerReady() {
-				//ePlayer.loadVideo(ids.get(0));
-				ePlayer.loadVideo(myId);
-			}
+		
+		ePlayer.setListener(new EPlayer.OnPlayerListener(){
+			
 			
 			@Override
-			public void onPlaybackStateChange(int state) {
-				if (state == EPlayer.ENDED) {
-					playNextVideo(ids);
-				}
+			public void onReady() {
+				
+				ePlayer.loadByVideoId(myId);
+			}
+
+			@Override
+			public void onError(String arg0) {
+			}
+
+			@Override
+			public void onPlaylistEnded() {
+				
+				
+			}
+
+			@Override
+			public void onVideoIdChanged(String arg0) {
+			}
+
+			@Override
+			public void onPlaylistFetched(ArrayList<String> arg0) {
 			}
 			
-			@Override
-			public void onReceiveVideoIds(String[] videoIds) { }
 		});
+		
+		
+		
+		
 	}
 	
 	private void playNextVideo(List<String> ids) {
 		if (ids != null && !ids.isEmpty()) {
 			currentVideoIndex = (currentVideoIndex + 1) % ids.size();
-			ePlayer.loadVideo(ids.get(currentVideoIndex));
+			ePlayer.loadByVideoId(ids.get(currentVideoIndex));
 			binding.recyclerView.smoothScrollToPosition(currentVideoIndex);
 		}
 	}
 	
 	private void fetchPlaylistFromServer() {
-		ePlayer.addOnEventListener(new OnEventListener() {
+		
+		
+		ePlayer.setListener(new EPlayer.OnPlayerListener(){
+			
 			@Override
-			public void onPlayerReady() {
+			public void onReady() {
+				//
 				
-				ePlayer.loadUrl(myId);
-				//ePlayer.cueVideo(PLAYLIST_ID, 0);
+				ePlayer.loadByVideoId(videoIds.get(currentVideoIndex));
+			}
+
+			@Override
+			public void onError(String arg0) {
+			}
+
+			@Override
+			public void onPlaylistEnded() {
+			}
+
+			@Override
+			public void onVideoIdChanged(String arg0) {
+			}
+
+			@Override
+			public void onPlaylistFetched(ArrayList<String> arg0) {
 			}
 			
-			@Override
-			public void onPlaybackStateChange(int state) {
-				if (state == EPlayer.ENDED && !videoIds.isEmpty()) {
-					playNextVideo(videoIds);
-				}
-			}
-			
-			@Override
-			public void onReceiveVideoIds(String[] ids) {
-				videoIds.clear();
-				for (String id : ids) videoIds.add(id);
-				setupRecyclerAndPlayer(videoIds);
-			}
 		});
+		
+		
+		
 	}
 	
-	
-	/*
-	
-	
-	public void getInfo() {
-		VideoInfoRepository infoRepository = new VideoInfoRepository(this);
-		infoRepository.getInfo(PLAYLIST_ID, new ResponseListener() {
-			@Override
-			public void onResponse(@NonNull JSONObject jsonObject) {
-				new AlertDialog.Builder(PlayerActivity.this)
-				.setMessage(jsonObject.toString())
-				.show();
-			}
-		});
-	}*/
+
 }

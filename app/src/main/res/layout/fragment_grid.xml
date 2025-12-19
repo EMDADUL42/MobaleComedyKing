@@ -2,22 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#660102" >
+    android:background="#3D4248" >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout_constraintBottom_toBottomOf="parent"
-        layout_constraintEnd_toEndOf="parent"
-		android:layout_margin="@dimen/_3sdp"
-        layout_constraintStart_toStartOf="parent"
-        layout_constraintTop_toTopOf="parent"
-        android:background="#4B0082" >
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="wrap_content" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
