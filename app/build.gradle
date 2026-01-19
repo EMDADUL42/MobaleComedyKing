@@ -51,6 +51,13 @@ dependencies {
 
 	implementation files('libs/gson-2.13.1.jar')
 	//implementation files('libs/okio-2.10.0.jar')
+	
+	
+	
+	
+	
+    implementation "androidx.asynclayoutinflater:asynclayoutinflater:1.0.0"
+
 
 
 	

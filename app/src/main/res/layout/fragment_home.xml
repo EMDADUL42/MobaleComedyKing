@@ -15,12 +15,14 @@
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentTop="true"
             android:indeterminate="true"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/progressbar" />
 
         <!-- CONTENT -->
 

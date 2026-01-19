@@ -95,6 +95,11 @@
         android:layout_marginStart="@dimen/_16sdp"
         android:layout_marginTop="@dimen/_35sdp"
         android:fitsSystemWindows="true" >
+		
+		
+		
+		
+	
 
         <include
             android:id="@+id/customNavigationView"

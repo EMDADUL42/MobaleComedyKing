@@ -1,434 +1,200 @@
 package com.emdadul.comedyking.adapter;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.comedyKing.eplayer.EPlayer;
-import com.emdadul.comedyking.activity.GridActivity;
+import com.emdadul.comedyking.datahelper.ChannelModel;
 import com.emdadul.comedyking.datahelper.ComedyKing;
 import com.emdadul.comedyking.databinding.VerticalRecyclerItemBinding;
 import com.eplayer.InfoRepository;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-public class MyVerticalAdapter extends RecyclerView.Adapter<MyVerticalAdapter.MyViewHolder> {
-
-    private final ArrayList<HashMap<String, String>> arrayList;
-    private final Context context;
-    private final LottieAnimationView progressBar;
-
-    public static int TOTAL = 0;
-    public static int DONE = 0;
-
-    public MyVerticalAdapter(ArrayList<HashMap<String, String>> arrayList,
-                             Context context,
-                             LottieAnimationView progressBar) {
-
-        this.arrayList = arrayList;
-        this.context = context;
-        this.progressBar = progressBar;
-
-        TOTAL = arrayList.size();
-        DONE = 0;
-
-        // ✅ show loader once
-       // progressBar.setVisibility(View.VISIBLE);
-    }
-
-    @NonNull
-    @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        VerticalRecyclerItemBinding binding =
-                VerticalRecyclerItemBinding.inflate(
-                        LayoutInflater.from(parent.getContext()),
-                        parent,
-                        false
-                );
-        return new MyViewHolder(binding, context, progressBar);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-
-        HashMap<String, String> hash = arrayList.get(position);
-        String title = hash.get("title");
-        String channelId = hash.get("channelId");
-
-        holder.binding.contentTitle.setText(title);
-
-        if (!holder.isLoaded) {
-            holder.loadChannelData(channelId);
-            holder.isLoaded = true;
-        }
-
-        holder.binding.arrow.setOnClickListener(v -> {
-            if (holder.videoIdsList.isEmpty()) {
-                Toast.makeText(context, "Loading…", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Intent intent = new Intent(context, GridActivity.class);
-            intent.putStringArrayListExtra("videoIds",
-                    new ArrayList<>(holder.videoIdsList));
-            intent.putStringArrayListExtra("videoTitle",
-                    new ArrayList<>(holder.titlesList));
-            context.startActivity(intent);
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return arrayList.size();
-    }
-
-    // =====================================================
-    // VIEW HOLDER
-    // =====================================================
-    static class MyViewHolder extends RecyclerView.ViewHolder {
-
-        final VerticalRecyclerItemBinding binding;
-        final Context context;
-        final LottieAnimationView progressBar;
-
-        final ArrayList<String> videoIdsList = new ArrayList<>();
-        final ArrayList<String> titlesList = new ArrayList<>();
-        final MyHorizontalAdapter horizontalAdapter;
-
-        boolean isLoaded = false;
-
-        public MyViewHolder(@NonNull VerticalRecyclerItemBinding binding,
-                            Context context,
-                            LottieAnimationView progressBar) {
-
-            super(binding.getRoot());
-            this.binding = binding;
-            this.context = context;
-            this.progressBar = progressBar;
-
-            horizontalAdapter =
-                    new MyHorizontalAdapter(context, videoIdsList, titlesList);
-            binding.recyclerView.setAdapter(horizontalAdapter);
-        }
-
-        void loadChannelData(String channelId) {
-
-            ArrayList<String> cached =
-                    ComedyKing.getVideoIds(context, channelId);
-
-            if (!cached.isEmpty()
-                    && !ComedyKing.shouldFetchFromServer(context, channelId)) {
-
-                videoIdsList.addAll(cached);
-
-                for (String id : cached) fetchVideoTitle(id);
-
-                checkComplete();
-                return;
-            }
-
-            fetchFromServer(channelId);
-        }
-
-        private void fetchFromServer(String channelId) {
-
-            FrameLayout hidden = new FrameLayout(context);
-            hidden.setVisibility(View.GONE);
-            ((Activity) context).addContentView(hidden,
-                    new FrameLayout.LayoutParams(1, 1));
-
-            EPlayer player = new EPlayer(context);
-			player.setEnabled(false);
-            hidden.addView(player);
-
-            player.setListener(new EPlayer.OnPlayerListener() {
-
-                @Override
-                public void onReady() {
-                    player.setPlaylistById(channelId);
-                }
-
-                @Override
-                public void onPlaylistFetched(ArrayList<String> ids) {
-
-                    videoIdsList.addAll(ids);
-                    ComedyKing.saveVideoIds(context, channelId,
-                            new ArrayList<>(ids));
-
-                    for (String id : ids) fetchVideoTitle(id);
-
-                    checkComplete();
-                }
-
-                @Override public void onError(String error) {}
-                @Override public void onPlaylistEnded() {}
-                @Override public void onVideoIdChanged(String id) {}
-            });
-        }
-
-        private void checkComplete() {
-            if (videoIdsList.size() >= 200 && ++DONE == TOTAL) {
-                ((Activity) context).runOnUiThread(() ->
-                        progressBar.setVisibility(View.GONE)
-                );
-            }
-        }
-
-        private void fetchVideoTitle(String videoId) {
-            InfoRepository repo = new InfoRepository(context);
-            repo.getInfo(videoId, new InfoRepository.ResponseListener() {
-                @Override
-                public void onResponse(JSONObject json) {
-                    try {
-                        String title = json.getString("title");
-                        ((Activity) context).runOnUiThread(() -> {
-                            titlesList.add(title);
-                            horizontalAdapter.notifyItemInserted(
-                                    titlesList.size() - 1);
-                        });
-                    } catch (Exception ignored) {}
-                }
-
-                @Override public void onFailure(Exception e) {}
-            });
-        }
-    }
-}
-
-
-
-
-
-/*
-
-package com.emdadul.comedyking.adapter;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.comedyKing.eplayer.EPlayer;
-import com.emdadul.comedyking.R;
-import com.emdadul.comedyking.activity.GridActivity;
-import com.emdadul.comedyking.datahelper.ComedyKing;
-import com.emdadul.comedyking.datahelper.Utils;
-import com.emdadul.comedyking.databinding.VerticalRecyclerItemBinding;
-import com.eplayer.InfoRepository;
-
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 
 public class MyVerticalAdapter extends RecyclerView.Adapter<MyVerticalAdapter.MyViewHolder> {
 	
-	private final ArrayList<HashMap<String, String>> arrayList;
+	private final ArrayList<ChannelModel> arrayList;
 	private final Context context;
-	public static int TOTAL = 0, DONE = 0;
+	private final ComedyKing comedyKing;
+	private final HashSet<String> loadingChannels = new HashSet<>();
+	private final RecyclerView.RecycledViewPool sharedPool = new RecyclerView.RecycledViewPool();
 	
-	
-	
-	public MyVerticalAdapter(ArrayList<HashMap<String, String>> arrayList, Context context) {
+	public MyVerticalAdapter(ArrayList<ChannelModel> arrayList, Context context) {
 		this.arrayList = arrayList;
 		this.context = context;
-		binding.progressBar.setVisibility(View.VISIBLE);
-		TOTAL = arrayList.size();
-		
-        DONE = 0;
-        
+		this.comedyKing = new ComedyKing(context);
+		initWebViewSuffix();
+	}
+	
+	private void initWebViewSuffix() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			try {
+				String processName = Application.getProcessName();
+				if (!context.getPackageName().equals(processName)) {
+					WebView.setDataDirectorySuffix(processName);
+				}
+			} catch (Exception ignored) {}
+		}
 	}
 	
 	@NonNull
 	@Override
 	public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		VerticalRecyclerItemBinding binding =
-		VerticalRecyclerItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-		
-		return new MyViewHolder(binding, context);
+		VerticalRecyclerItemBinding binding = VerticalRecyclerItemBinding.inflate(
+		LayoutInflater.from(context), parent, false);
+		return new MyViewHolder(binding);
 	}
 	
 	@Override
 	public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-		
-		HashMap<String, String> hash = arrayList.get(position);
-		String title = hash.get("title");
-		String channelId = hash.get("channelId");
-		
-		holder.binding.contentTitle.setText(title);
-		
-		// Load channel data only once per row
-		if (!holder.isLoaded) {
-			holder.loadChannelData(channelId);
-			holder.isLoaded = true;
-		}
-		
-		// Arrow click to GridActivity
-		holder.binding.arrow.setOnClickListener(v -> {
-			if (holder.videoIdsList.isEmpty() || holder.titlesList.isEmpty()) {
-				Toast.makeText(context, "Data is still loading, please wait...", Toast.LENGTH_SHORT).show();
-				return;
-			}
-			
-			Intent intent = new Intent(context, GridActivity.class);
-			intent.putStringArrayListExtra("videoIds", new ArrayList<>(holder.videoIdsList));
-			intent.putStringArrayListExtra("videoTitle", new ArrayList<>(holder.titlesList));
-			context.startActivity(intent);
-		});
+		ChannelModel model = arrayList.get(position);
+		holder.binding.contentTitle.setText(model.getTitle());
+		holder.binding.recyclerView.setRecycledViewPool(sharedPool);
+		holder.bind(model);
 	}
 	
 	@Override
 	public int getItemCount() {
-		return arrayList.size();
+		return arrayList != null ? arrayList.size() : 0;
 	}
 	
-	// ================================================================
-	// VIEW HOLDER
-	// ================================================================
-	public static class MyViewHolder extends RecyclerView.ViewHolder {
-		
+	class MyViewHolder extends RecyclerView.ViewHolder {
 		final VerticalRecyclerItemBinding binding;
-		final Context context;
+		MyHorizontalAdapter horizontalAdapter;
+		ChannelModel currentModel;
 		
-		final ArrayList<String> videoIdsList = new ArrayList<>();
-		final ArrayList<String> titlesList = new ArrayList<>();
-		final MyHorizontalAdapter horizontalAdapter;
-		
-		boolean isLoaded = false; // Prevent multiple loads per row
-		
-		public MyViewHolder(@NonNull VerticalRecyclerItemBinding binding, Context context) {
+		MyViewHolder(@NonNull VerticalRecyclerItemBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
-			this.context = context;
-			
-			// Horizontal adapter created once
-			horizontalAdapter = new MyHorizontalAdapter(context, videoIdsList, titlesList);
+			binding.recyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false));
+			binding.recyclerView.setHasFixedSize(true);
+			binding.recyclerView.setItemViewCacheSize(10);
+		}
+		
+		void bind(ChannelModel model) {
+			this.currentModel = model;
+			// সরাসরি মডেলের লিস্ট পাস করা হচ্ছে
+			horizontalAdapter = new MyHorizontalAdapter(context, model.getVideoIds(), model.getVideoTitles());
 			binding.recyclerView.setAdapter(horizontalAdapter);
-		}
-		
-		// ================================================================
-		// LOAD CHANNEL DATA (cached or server)
-		// ================================================================
-		public void loadChannelData(String channelId) {
 			
-			// 1️⃣ Try cached video IDs
-			ArrayList<String> cached = ComedyKing.getVideoIds(context, channelId);
+			String cacheKey = "channel_" + model.getChannelId();
+			String cached = comedyKing.loadFromFileCache(context, cacheKey);
 			
-			if (!cached.isEmpty() && !ComedyKing.shouldFetchFromServer(context, channelId)) {
-				for (String videoId : cached) {
-					fetchVideoTitle(videoId);
-					videoIdsList.add(videoId);
-				}
-				return;
+			if (cached != null && model.getVideoIds().isEmpty()) {
+				loadFromCache(model, cached);
+				} else if (model.getVideoIds().isEmpty() && !loadingChannels.contains(model.getChannelId())) {
+				fetchFromServer(model);
 			}
-			
-			// 2️⃣ Fetch from server
-			fetchFromServer(channelId);
 		}
 		
-		// ================================================================
-		// FETCH FROM SERVER using hidden EPlayer
-		// ================================================================
-		private void fetchFromServer(String channelId) {
-			
-			Utils.checkAndDataShowDialog(context);
-			
-			// Hidden container for EPlayer
-			FrameLayout hiddenContainer = new FrameLayout(context);
-			hiddenContainer.setVisibility(FrameLayout.GONE);
-			((Activity) context).addContentView(
-			hiddenContainer,
-			new FrameLayout.LayoutParams(1, 1)
-			);
+		private void loadFromCache(ChannelModel model, String json) {
+			try {
+				JSONObject obj = new JSONObject(json);
+				JSONArray jIds = obj.getJSONArray("videoIds");
+				JSONArray jTitles = obj.getJSONArray("titles");
+				
+				model.getVideoIds().clear();
+				model.getVideoTitles().clear();
+				
+				for (int i = 0; i < jIds.length(); i++) {
+					model.getVideoIds().add(jIds.getString(i));
+					model.getVideoTitles().add(i < jTitles.length() ? jTitles.getString(i) : "...");
+				}
+				horizontalAdapter.notifyDataSetChanged();
+			} catch (Exception ignored) {}
+		}
+		
+		private void fetchFromServer(ChannelModel model) {
+			loadingChannels.add(model.getChannelId());
+			new Handler(Looper.getMainLooper()).postDelayed(() -> {
+				if (!((Activity) context).isFinishing()) {
+					executeEPlayerFetch(model);
+				}
+			}, 300);
+		}
+		
+		private void executeEPlayerFetch(ChannelModel model) {
+			FrameLayout container = new FrameLayout(context);
+			((Activity) context).addContentView(container, new FrameLayout.LayoutParams(2, 2));
 			
 			EPlayer player = new EPlayer(context);
-			player.enableAutoPlayOnReady();
-			hiddenContainer.addView(player);
+			player.setEnabled(false);
+			container.addView(player);
 			
 			player.setListener(new EPlayer.OnPlayerListener() {
-				@Override
-				public void onReady() {
-					player.setPlaylistById(channelId);
-				}
-				
-				@Override
-				public void onPlaylistFetched(ArrayList<String> videoIds) {
+				@Override public void onReady() { player.setPlaylistById(model.getChannelId()); }
+				@Override public void onPlaylistFetched(ArrayList<String> fetchedIds) {
+					model.getVideoIds().addAll(fetchedIds);
+					for (int i = 0; i < fetchedIds.size(); i++) model.getVideoTitles().add("...");
 					
-					videoIdsList.addAll(videoIds);
-					
-					// Save to cache
-					ComedyKing.saveVideoIds(context, channelId, new ArrayList<>(videoIdsList));
-					
-					// Fetch titles
-					for (String id : videoIdsList) {
-						fetchVideoTitle(id);
+					horizontalAdapter.notifyDataSetChanged();
+					for (int i = 0; i < fetchedIds.size(); i++) {
+						fetchTitle(fetchedIds.get(i), i, model);
 					}
-					
-					
-					if (videoIdsList.size() >= 200 && ++DONE == TOTAL) {
-						((Activity) context).runOnUiThread(() ->
-						binding.progressBar.setVisibility(View.GONE)
-						);
-					}
-					
-					
-					
-					
-					
-					
-					
+					releaseResources(container, player, model.getChannelId());
 				}
-				
-				@Override public void onError(String error) {}
+				@Override public void onError(String error) { releaseResources(container, player, model.getChannelId()); }
 				@Override public void onPlaylistEnded() {}
 				@Override public void onVideoIdChanged(String id) {}
 			});
 		}
 		
-		// ================================================================
-		// FETCH VIDEO TITLE
-		// ================================================================
-		private void fetchVideoTitle(String videoId) {
-			
-			InfoRepository repo = new InfoRepository(context);
-			
-			repo.getInfo(videoId, new InfoRepository.ResponseListener() {
+		private void fetchTitle(String videoId, int index, ChannelModel model) {
+			new InfoRepository(context).getInfo(videoId, new InfoRepository.ResponseListener() {
 				@Override
 				public void onResponse(JSONObject json) {
 					try {
 						String title = json.getString("title");
-						
-						((Activity) context).runOnUiThread(() -> {
-							titlesList.add(title);
-							horizontalAdapter.notifyItemInserted(titlesList.size() - 1);
+						new Handler(Looper.getMainLooper()).post(() -> {
+							if (index < model.getVideoTitles().size()) {
+								model.getVideoTitles().set(index, title);
+								// চেক করা হচ্ছে ভিউ হোল্ডার কি এখনো ওই মডেলের সাথে আছে কি না
+								if (currentModel != null && currentModel.getChannelId().equals(model.getChannelId())) {
+									horizontalAdapter.notifyItemChanged(index, "TITLE_UPDATE");
+								}
+								saveCache(model);
+							}
 						});
-						
 					} catch (Exception ignored) {}
 				}
-				
-				@Override
-				public void onFailure(Exception e) {}
+				@Override public void onFailure(Exception e) {}
+			});
+		}
+		
+		private void saveCache(ChannelModel model) {
+			try {
+				JSONObject root = new JSONObject();
+				root.put("videoIds", new JSONArray(model.getVideoIds()));
+				root.put("titles", new JSONArray(model.getVideoTitles()));
+				comedyKing.saveToFileCacheAsync(context, "channel_" + model.getChannelId(), root.toString());
+			} catch (Exception ignored) {}
+		}
+		
+		private void releaseResources(FrameLayout container, EPlayer player, String channelId) {
+			new Handler(Looper.getMainLooper()).post(() -> {
+				if (container != null && container.getParent() != null) {
+					container.removeAllViews();
+					((ViewGroup) container.getParent()).removeView(container);
+				}
+				loadingChannels.remove(channelId);
 			});
 		}
 	}
-}*/
+}

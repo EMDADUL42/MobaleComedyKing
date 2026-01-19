@@ -1,143 +1,146 @@
 package com.emdadul.comedyking.fragment;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.emdadul.comedyking.R;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.emdadul.comedyking.datahelper.ChannelModel;
 import com.emdadul.comedyking.adapter.MyVerticalAdapter;
-import com.emdadul.comedyking.datahelper.ComedyKing;
-import com.emdadul.comedyking.databinding.DataLoadCustomDialogBinding;
 import com.emdadul.comedyking.databinding.FragmentHomeBinding;
+import com.emdadul.comedyking.datahelper.ComedyKing;
+
+
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-/*
-* This App Made By Md Emdadul Huqe
-* mdemdadulhuqe01@gmail.com
-* 01928077542
-* 
-*/
-
 
 public class HomeFragment extends Fragment {
 	
 	private FragmentHomeBinding binding;
 	private ComedyKing comedyKing;
-	private ArrayList<HashMap<String, String>> arrayList;
-	private Dialog loadingDialog;
+	private MyVerticalAdapter adapter;
+	
+	// HashMap এর বদলে এখন ChannelModel এর লিস্ট
+	private final ArrayList<ChannelModel> arrayList = new ArrayList<>();
+	
+	private int currentPage = 1;
+	private final int pageSize = 15; // আপনার PHP লিমিটের সাথে মিল রেখে
+	private boolean isLoading = false;
+	private boolean hasMore = true;
 	
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		binding = FragmentHomeBinding.inflate(inflater, container, false);
-		comedyKing = new ComedyKing(requireActivity());
-		
-		// RecyclerView setup
-		binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-		binding.recyclerView.setHasFixedSize(true);
-		binding.recyclerView.setItemViewCacheSize(20);
-		
-		
-		
-		
-		
-		
-		// Show loading
-		showLoadingDialog();
-		
-		// Fetch data
-		getServerResponse();
-		
 		return binding.getRoot();
 	}
 	
-	//===============================================================
-	// Show/Hide Dialog
-	//===============================================================
-	private void showLoadingDialog() {
-		if (loadingDialog != null && loadingDialog.isShowing()) return;
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 		
-		DataLoadCustomDialogBinding dialogBinding = DataLoadCustomDialogBinding.inflate(getLayoutInflater());
-		loadingDialog = new Dialog(requireContext());
-		loadingDialog.setContentView(dialogBinding.getRoot());
-		loadingDialog.setCancelable(false);
+		comedyKing = new ComedyKing(requireActivity());
 		
-		if (loadingDialog.getWindow() != null) {
-			loadingDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-		}
-		loadingDialog.show();
-	}
-	
-	private void hideLoadingDialog() {
-		if (loadingDialog != null && loadingDialog.isShowing()) {
-			loadingDialog.dismiss();
-		}
-	}
-	
-	//===============================================================
-	// Server Response
-	//===============================================================
-	private void getServerResponse() {
-		comedyKing.getResponse(requireActivity(), "getTitleAndIds.php",
-		response -> {
-			arrayList = new ArrayList<>();
-			try {
-				JSONArray jsonArray = new JSONArray(response);
-				for (int i = 0; i < jsonArray.length(); i++) {
-					JSONObject obj = jsonArray.getJSONObject(i);
-					HashMap<String, String> hashMap = new HashMap<>();
-					hashMap.put("title", obj.optString("channelName", "Untitled"));
-					hashMap.put("channelId", obj.optString("channelId", ""));
-					arrayList.add(hashMap);
+		// RecyclerView Setup
+		LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+		binding.recyclerView.setLayoutManager(layoutManager);
+		binding.recyclerView.setHasFixedSize(true); // পারফরম্যান্সের জন্য
+		
+		// Adapter Setup
+		adapter = new MyVerticalAdapter(arrayList,requireActivity());
+		binding.recyclerView.setAdapter(adapter);
+		
+		// Initial Data Load
+		loadData();
+		
+		// Pagination logic
+		binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+				if (dy > 0 && !isLoading && hasMore) {
+					// শেষ আইটেমের ৩টি আগে থাকতেই লোড শুরু হবে (স্মুথ এক্সপেরিয়েন্স)
+					if (layoutManager.findLastVisibleItemPosition() >= arrayList.size() - 3) {
+						currentPage++;
+						loadData();
+					}
 				}
-				
-				if (!isAdded()) return;
-				
-				requireActivity().runOnUiThread(() -> {
-					MyVerticalAdapter adapter = new MyVerticalAdapter(arrayList, getActivity(),binding.progressBar);
-					binding.recyclerView.setAdapter(adapter);
-					hideLoadingDialog();
-				});
-				
-				} catch (JSONException e) {
-				e.printStackTrace();
-				showError("Invalid data format received from server.");
 			}
-		},
-		exception -> {
-			showError("Network error. Please check your connection.");
 		});
 	}
 	
-	//===============================================================
-	// Error Handler
-	//===============================================================
-	private void showError(String message) {
-		if (!isAdded()) return;
+	public void loadData() {
+		if (isLoading) return;
+		isLoading = true;
 		
-		requireActivity().runOnUiThread(() -> {
-			hideLoadingDialog();
-			new AlertDialog.Builder(requireActivity())
-			.setTitle("Error")
-			.setMessage(message)
-			.setCancelable(false)
-			.setPositiveButton("Retry", (dialog, which) -> {
-				dialog.dismiss();
-				showLoadingDialog();
-				getServerResponse();
-			})
-			.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-			.show();
+		if (currentPage == 1) binding.progressBar.setVisibility(View.VISIBLE);
+		
+		comedyKing.fetchPage(requireActivity(), currentPage, pageSize, new ComedyKing.PaginationResponseHandler() {
+			@Override
+			public void onSuccess(String json, int itemCount) {
+				if (!isAdded() || binding == null) return;
+				
+				try {
+					JSONObject jsonResponse = new JSONObject(json);
+					hasMore = jsonResponse.optBoolean("has_more", false);
+					JSONArray data = jsonResponse.getJSONArray("data");
+					
+					int startPosition = arrayList.size();
+					
+					for (int i = 0; i < data.length(); i++) {
+						JSONObject obj = data.getJSONObject(i);
+						
+						// HashMap এর বদলে ChannelModel অবজেক্ট তৈরি
+						ChannelModel model = new ChannelModel(
+						obj.getString("channelName"),
+						obj.getString("channelId")
+						);
+						arrayList.add(model);
+					}
+					
+					// UI Update on Main Thread
+					binding.recyclerView.post(() -> {
+						if (binding != null) {
+							if (currentPage == 1) {
+								adapter.notifyDataSetChanged();
+								} else {
+								adapter.notifyItemRangeInserted(startPosition, data.length());
+							}
+							isLoading = false;
+							binding.progressBar.setVisibility(View.GONE);
+						}
+					});
+					
+					} catch (Exception e) {
+					isLoading = false;
+					hideProgressBar();
+				}
+			}
+			}, new ComedyKing.ErrorHandler() {
+			@Override
+			public void onError(IOException exception) {
+				isLoading = false;
+				hideProgressBar();
+			}
 		});
+	}
+	
+	private void hideProgressBar() {
+		if (binding != null) {
+			binding.recyclerView.post(() -> binding.progressBar.setVisibility(View.GONE));
+		}
+	}
+	
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		binding = null; // মেমোরি লিক প্রিভেনশন
 	}
 }

@@ -1,8 +1,5 @@
-<!-- res/anim/item_animation.xml -->
-<set xmlns:android="http://schemas.android.com/apk/res/android" android:duration="400">
+<set xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <scale android:fromXScale="0.8" android:fromYScale="0.8" android:pivotX="50%" android:pivotY="50%" android:toXScale="1.0" android:toYScale="1.0" />
-
-    <alpha android:fromAlpha="0.0" android:toAlpha="1.0" />
+    <alpha android:duration="1000" android:fromAlpha="1.0" android:repeatCount="infinite" android:repeatMode="reverse" android:toAlpha="0.4" />
 
 </set>
