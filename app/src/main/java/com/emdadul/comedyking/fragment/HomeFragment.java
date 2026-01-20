@@ -4,22 +4,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.emdadul.comedyking.adapter.PlayerSystemVerticalAdapter;
 import com.emdadul.comedyking.datahelper.ChannelModel;
 import com.emdadul.comedyking.adapter.MyVerticalAdapter;
 import com.emdadul.comedyking.databinding.FragmentHomeBinding;
 import com.emdadul.comedyking.datahelper.ComedyKing;
-
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -27,7 +23,7 @@ public class HomeFragment extends Fragment {
 	
 	private FragmentHomeBinding binding;
 	private ComedyKing comedyKing;
-	private MyVerticalAdapter adapter;
+	private PlayerSystemVerticalAdapter adapter;
 	
 	// HashMap এর বদলে এখন ChannelModel এর লিস্ট
 	private final ArrayList<ChannelModel> arrayList = new ArrayList<>();
@@ -55,7 +51,7 @@ public class HomeFragment extends Fragment {
 		binding.recyclerView.setHasFixedSize(true); // পারফরম্যান্সের জন্য
 		
 		// Adapter Setup
-		adapter = new MyVerticalAdapter(arrayList,requireActivity());
+		adapter = new PlayerSystemVerticalAdapter(requireActivity(),arrayList);
 		binding.recyclerView.setAdapter(adapter);
 		
 		// Initial Data Load
