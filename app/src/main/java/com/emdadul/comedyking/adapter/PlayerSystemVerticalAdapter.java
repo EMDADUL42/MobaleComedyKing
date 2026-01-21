@@ -53,10 +53,10 @@ public class PlayerSystemVerticalAdapter extends RecyclerView.Adapter<PlayerSyst
 	public PlayerSystemVerticalViewModel onCreateViewHolder(ViewGroup patent, int viewType) {
 		
 		VerticalRecyclerItemBinding binding = VerticalRecyclerItemBinding.inflate(LayoutInflater.from(context),patent,false);
-	    return new PlayerSystemVerticalViewModel(binding,context,comedyKing,loadingChannels,sharedPool);
+		return new PlayerSystemVerticalViewModel(binding,context,comedyKing,loadingChannels,sharedPool);
 		
 	}
-
+	
 	@Override
 	public void onBindViewHolder(PlayerSystemVerticalViewModel holder, int position) {
 		
@@ -65,14 +65,11 @@ public class PlayerSystemVerticalAdapter extends RecyclerView.Adapter<PlayerSyst
 		
 		
 	}
-
+	
 	@Override
 	public int getItemCount() {
 		
-	    return arrayList != null ? arrayList.size() : 0;
+		return arrayList != null ? arrayList.size() : 0;
 	}
 	
 }
-
-
-

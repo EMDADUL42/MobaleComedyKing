@@ -1,7 +1,5 @@
 package com.emdadul.comedyking.adapter;
 
-
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -25,6 +23,20 @@ public class PlayerSystemHorizontalAdapter extends RecyclerView.Adapter<PlayerSy
 		this.videoTitleArray = titles;
 	}
 	
+	// মাস্টার লিস্ট থেকে ডাটা লোড করার মেথড (Horizontal Lazy Loading)
+	public void loadMore(ArrayList<String> masterIds, ArrayList<String> masterTitles) {
+		int currentSize = videoIdsArray.size();
+		int nextLimit = Math.min(currentSize + 10, masterIds.size());
+		
+		if (currentSize < nextLimit) {
+			for (int i = currentSize; i < nextLimit; i++) {
+				videoIdsArray.add(masterIds.get(i));
+				videoTitleArray.add(masterTitles.get(i));
+			}
+			notifyItemRangeInserted(currentSize, nextLimit - currentSize);
+		}
+	}
+	
 	@NonNull
 	@Override
 	public PlayerSystemHorizontalViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -34,13 +46,10 @@ public class PlayerSystemHorizontalAdapter extends RecyclerView.Adapter<PlayerSy
 	
 	@Override
 	public void onBindViewHolder(@NonNull PlayerSystemHorizontalViewHolder holder, int position, @NonNull List<Object> payloads) {
-		if (!payloads.isEmpty()) {
-			for (Object payload : payloads) {
-				if (payload.equals("TITLE_UPDATE")) {
-					String title = (videoTitleArray.size() > position) ? videoTitleArray.get(position) : "...";
-					holder.updateTitle(title);
-				}
-			}
+		if (!payloads.isEmpty() && payloads.get(0).equals("TITLE_UPDATE")) {
+			// শুধুমাত্র টাইটেল আপডেট করবে, পুরো আইটেম রেন্ডার হবে না (Blinking বন্ধ হবে)
+			String title = (videoTitleArray.size() > position) ? videoTitleArray.get(position) : "...";
+			holder.updateTitle(title);
 			} else {
 			onBindViewHolder(holder, position);
 		}
@@ -49,7 +58,7 @@ public class PlayerSystemHorizontalAdapter extends RecyclerView.Adapter<PlayerSy
 	@Override
 	public void onBindViewHolder(@NonNull PlayerSystemHorizontalViewHolder holder, int position) {
 		String videoId = videoIdsArray.get(position);
-		String title = (videoTitleArray.size() > position) ? videoTitleArray.get(position) : "Loading...";
+		String title = (videoTitleArray.size() > position) ? videoTitleArray.get(position) : "...";
 		
 		holder.bind(videoId, title, videoIdsArray, videoTitleArray, position, lastPosition);
 		
@@ -65,6 +74,7 @@ public class PlayerSystemHorizontalAdapter extends RecyclerView.Adapter<PlayerSy
 	
 	@Override
 	public void onViewDetachedFromWindow(@NonNull PlayerSystemHorizontalViewHolder holder) {
+		// ভিউ স্ক্রিনের বাইরে চলে গেলে অ্যানিমেশন ক্লিয়ার করবে
 		holder.clearAnimation();
 		super.onViewDetachedFromWindow(holder);
 	}
